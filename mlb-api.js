@@ -16,10 +16,7 @@ MlbAPI.findCondensedGame = function (dateParameter, teamParameter, callback) {
         let opponent = null;
         let gameDirectoryUrl = null;
 
-        // Find any matching games
-        const games = gameData.games.game;
-
-        if (games == null) {
+        if (gameData.games == null || gameData.games.game == null) {
             const response = {
                 opponent: opponent,
                 date: dateParameter,
@@ -29,6 +26,9 @@ MlbAPI.findCondensedGame = function (dateParameter, teamParameter, callback) {
             callback(response, null); 
             return;           
         }
+
+        // Find any matching games
+        const games = gameData.games.game;
 
         for (var i = 0; i < games.length; i++) {
             const game = games[i];
@@ -117,6 +117,7 @@ function findGamesOnDate(dateParameter, callback) {
     const day = dateParts[2];
 
     const gameDataUrl = "http://gd2.mlb.com/components/game/mlb/year_" + year + "/month_" + month + "/day_" + day + "/master_scoreboard.xml";
+    console.log("Game Data URL: " + gameDataUrl);
 
     request(
         {
@@ -139,6 +140,7 @@ function findGamesOnDate(dateParameter, callback) {
 };
 
 function findCondensedGame(gameDataUrl, callback) {
+    console.log("Media Data URL: " + gameDataUrl);
     request(
         {
             uri: gameDataUrl, 
