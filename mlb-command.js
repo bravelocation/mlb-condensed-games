@@ -8,7 +8,7 @@ if (process.argv.length < 4) {
 }
 
 const dateParameter = process.argv[2];
-const teamParameter = process.argv[3];
+const teamParameter = process.argv[3].toLowerCase();
 
 mlbApi.findCondensedGame(dateParameter, teamParameter, function(gameDetails, error){
     if (error) {
