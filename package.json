@@ -1,0 +1,26 @@
+{
+  "name": "mlb-condensed-games",
+  "version": "1.0.0",
+  "description": "Scripts to check if MLB condensed games are available",
+  "main": "checker.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bravelocation/mlb-condensed-games.git"
+  },
+  "keywords": [
+    "web",
+    "ping",
+    "slack"
+  ],
+  "author": "John Pollard",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bravelocation/mlb-condensed-games/issues"
+  },
+  "homepage": "https://github.com/bravelocation/mlb-condensed-games#readme",
+  "dependencies": {
+    "@slack/client": "^4.9.0",
+    "request": "^2.88.0",
+    "xml2json":"^0.11.2"
+  }
+}
