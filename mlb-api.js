@@ -1,5 +1,5 @@
 const request = require("request");
-var parser = require('xml2json');
+const xml2js = require('xml2js');
 
 var MlbAPI = function () {};
 
@@ -33,16 +33,18 @@ MlbAPI.findCondensedGame = function (dateParameter, teamParameter, callback) {
         for (var i = 0; i < games.length; i++) {
             const game = games[i];
 
-            if (game.home_file_code == teamParameter || game.away_file_code == teamParameter) {
+            const homeCode = game["$"].home_file_code;
+            const awayCode = game["$"].away_file_code;
+            const gameDirectory = game["$"].game_data_directory;
+
+            if (homeCode == teamParameter || awayCode == teamParameter) {
                 // Found a matching game
-                console.log("Game found " + game.home_file_code + " and " + game.away_file_code);
+                gameDirectoryUrl = "http://gd2.mlb.com" + gameDirectory + "/media/mobile.xml";
 
-                gameDirectoryUrl = "http://gd2.mlb.com" + game.game_data_directory + "/media/mobile.xml";
-
-                if (game.home_file_code == teamParameter) {
-                    opponent = game.away_file_code;
+                if (homeCode == teamParameter) {
+                    opponent = awayCode;
                 } else {
-                    opponent = game.home_file_code;
+                    opponent = homeCode;
                 }
 
                 break;
@@ -64,13 +66,14 @@ MlbAPI.findCondensedGame = function (dateParameter, teamParameter, callback) {
                 if (mediaNodes) {
                     for (var i = 0; i < mediaNodes.length; i++) {
                         const media = mediaNodes[i];
+                        const mediaType = media["$"]["media-type"];
             
-                        if (media["media-type"] == "C") {
+                        if (mediaType == "C") {
                             // Found condensed media, so find the correct media type
                             const mediaUrls = media.url;
     
                             for (var j = 0; j < mediaUrls.length; j++) {
-                                const currentMediaUrl = mediaUrls[j]["$t"];
+                                const currentMediaUrl = mediaUrls[j]["_"];
     
                                 if (currentMediaUrl.endsWith(".mp4")) {
                                     mediaUrl = currentMediaUrl;
@@ -129,8 +132,9 @@ function findGamesOnDate(dateParameter, callback) {
             }
 
             // Otherwise let's parse the XML and return it as JSON
-            var json = JSON.parse(parser.toJson(body, {}));
-            callback(json, null);
+            xml2js.parseString(body, function(err, data){
+                callback(data, err);
+            });
         });  
 };
 
@@ -149,8 +153,9 @@ function findCondensedGame(gameDataUrl, callback) {
             }
 
             // Otherwise let's parse the XML and return it as JSON
-            var json = JSON.parse(parser.toJson(body, {}));
-            callback(json, null);
+            xml2js.parseString(body, function(err, data){
+                callback(data, err);
+            });
         });  
 };
 
