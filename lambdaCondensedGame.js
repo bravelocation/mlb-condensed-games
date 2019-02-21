@@ -2,11 +2,22 @@
 const mlbApi = require("./mlb-api");
 
 exports.handler = function(event, context, callback) {
+    const apiHeader = event.headers.MLBAPIRequest || event.headers.mlbapirequest;
+
+    // Check the request has a valid header
+    if (apiHeader == null) {
+        console.log("Input error: missing Header" + JSON.stringify(event.headers));
+        callback("400 Invalid Input");
+        return;       
+    }
+
+    if (apiHeader != process.env.MLBAPIRequest) {
+        console.log("Input error: invalid Header:" + JSON.stringify(event.headers));
+        callback("400 Invalid Input");
+        return;       
+    }
+
     // Get the parameters from the post request
-    console.log('Received event:', JSON.stringify(event, null, 2));
-
-    console.log('Body:' + event.body);
-
     const inputParameters = JSON.parse(event.body);
     const gameDate = inputParameters.params.gameDate;
     const team = inputParameters.params.team;
