@@ -25,7 +25,7 @@ This will then:
 1. Build URL like http://gd2.mlb.com/components/game/mlb/year_2018/month_06/day_26/master_scoreboard.xml (using the incoming date)
 2. Look for &lt;game&gt; node where home_file_code="nym" or away_file_code="nym” (using the incoming team)
 3. Pick up game_data_directory attribute, add on /media/mobile.xml to get the URL e.g. http://gd2.mlb.com/components/game/mlb/year_2018/month_06/day_26/gid_2018_06_26_pitmlb_nynmlb_1/media/mobile.xml 
-4. Find &lt;media&gt; node where condensed="true" or media-type="C"
+4. Find &lt;media&gt; node where media-type="C"
 5. Pick the correct URL node - one that has a value that ends in .mp4
 
 Assuming that a condensed game is found, the function then returns JSON like:
@@ -43,7 +43,7 @@ Note:
 
 
 ### Configuration - Environment variables
-- MLBAPIRequest: The value to be sent in the header of any request
+- ```MLBAPIRequest```: The value to be sent in the header of any request
 
 
 ## Monitoring function
@@ -60,10 +60,10 @@ This function saves the last found game data in an S3 bucket, and then is design
 You can setup a schedule in Cloudwatch to run every N minutes.
 
 ### Configuration - Environment variables
-- S3ACCESSKEYID: Access Key for the S3 bucket to save game data
-- S3DATABUCKET: Name of the S3 bucket to save game data
-- S3DATAFILE: Name of the file to save game data in
-- S3SECRETACCESSKEY: Access Secret for the S3 bucket to save game data
-- SLACK_WEBHOOK_URL: URL of the webhook to send the Slack message to
-- TEAM: Team abbreviation to monitor e.g. nym
+- ```S3ACCESSKEYID```: Access Key for the S3 bucket to save game data
+- ```S3DATABUCKET```: Name of the S3 bucket to save game data
+- ```S3DATAFILE```: Name of the file to save game data in
+- ```S3SECRETACCESSKEY```: Access Secret for the S3 bucket to save game data
+- ```SLACK_WEBHOOK_URL```: URL of the webhook to send the Slack message to
+- ```TEAM```: Team abbreviation to monitor e.g. nym
 
