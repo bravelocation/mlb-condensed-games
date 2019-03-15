@@ -35,11 +35,11 @@ MlbAPI.findCondensedGame = function (dateParameter, teamParameter, callback) {
 
             const homeCode = game["$"].home_file_code;
             const awayCode = game["$"].away_file_code;
-            const gameDirectory = game["$"].game_data_directory;
+            const game_pk = game["$"].game_pk;
 
             if (homeCode == teamParameter || awayCode == teamParameter) {
                 // Found a matching game
-                gameDirectoryUrl = "http://gd2.mlb.com" + gameDirectory + "/media/mobile.xml";
+                gameDirectoryUrl = "https://statsapi.mlb.com/api/v1/game/" + game_pk + "/content?language=en";
 
                 if (homeCode == teamParameter) {
                     opponent = awayCode;
@@ -53,7 +53,7 @@ MlbAPI.findCondensedGame = function (dateParameter, teamParameter, callback) {
 
         if (gameDirectoryUrl) {
             // We have a game, so go see if there is a condensed game
-            findCondensedGame(gameDirectoryUrl, function(gameData, error){
+            findGameMedia(gameDirectoryUrl, function(gameData, error){
                 if (error) {
                     callback(null, error);
                     return;
@@ -61,29 +61,58 @@ MlbAPI.findCondensedGame = function (dateParameter, teamParameter, callback) {
 
                 var mediaUrl = null;
 
-                const mediaNodes = gameData.highlights.media;
+                if (gameData.media && gameData.media.epgAlternate) {
+                    const epgNodes = gameData.media.epgAlternate;
 
-                if (mediaNodes) {
-                    for (var i = 0; i < mediaNodes.length; i++) {
-                        const media = mediaNodes[i];
-                        const mediaType = media["$"]["media-type"];
-            
-                        if (mediaType == "C") {
-                            // Found condensed media, so find the correct media type
-                            const mediaUrls = media.url;
-    
-                            for (var j = 0; j < mediaUrls.length; j++) {
-                                const currentMediaUrl = mediaUrls[j]["_"];
-    
-                                if (currentMediaUrl.endsWith(".mp4")) {
-                                    mediaUrl = currentMediaUrl;
+                    for (var e = 0; e < epgNodes.length; e++) {
+
+                        const epgNode = epgNodes[e];
+
+                        if (epgNode.title == "Extended Highlights") {
+                            const highlights = epgNode.items;
+
+                            for (var i = 0; i < highlights.length; i++) {
+                                var highlightNode = highlights[i];
+        
+                                // Check if any of the keywords are condensed game
+                                var foundCondensedGame = false;
+        
+                                for (var k = 0; k < highlightNode.keywordsAll.length; k++) {
+                                    var keywordNode =  highlightNode.keywordsAll[k];
+        
+                                    if (keywordNode.type == "mlbtax" && keywordNode.value == "condensed_game") {
+                                        foundCondensedGame = true;
+                                    }
+                                }
+        
+                                // If it is a condensed game, return the largest mp4 media node
+                                if (foundCondensedGame) {
+                                    const mediaNodes = highlightNode.playbacks;
+        
+                                    var largestWidth = 0;
+                                    for (var m = 0; m < mediaNodes.length; m++) {
+                                        const mediaNode = mediaNodes[m];
+        
+                                        const currentMediaUrl = mediaNode.url;
+                                        const currentWidth = mediaNode.width;
+        
+                                        if (currentMediaUrl.endsWith(".mp4") && currentWidth > largestWidth) {
+                                            mediaUrl = currentMediaUrl;
+                                            largestWidth = currentWidth;
+                                        }
+                                    }
+        
+                                    // Found condensed game, so we are done
                                     break;
                                 }
                             }
+
+                            // Found condensed media, so we are done
+                            break;
                         }
-                    }  
+                    }
                 }
-             
+ 
                 const response = {
                     opponent: opponent,
                     date: dateParameter,
@@ -139,7 +168,7 @@ function findGamesOnDate(dateParameter, callback) {
         });  
 };
 
-function findCondensedGame(gameDataUrl, callback) {
+function findGameMedia(gameDataUrl, callback) {
     console.log("Media Data URL: " + gameDataUrl);
     request(
         {
@@ -154,10 +183,8 @@ function findCondensedGame(gameDataUrl, callback) {
                 return;
             }
 
-            // Otherwise let's parse the XML and return it as JSON
-            xml2js.parseString(body, function(err, data){
-                callback(data, err);
-            });
+            // Otherwise return the JSON
+            callback(JSON.parse(body), null);
         });  
 };
 
