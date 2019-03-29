@@ -25,8 +25,8 @@ This will then:
 1. Build URL like http://gd2.mlb.com/components/game/mlb/year_2018/month_06/day_26/master_scoreboard.xml (using the incoming date)
 2. Look for &lt;game&gt; node where home_file_code="nym" or away_file_code="nym” (using the incoming team)
 3. Pick up game_pk attribute to get the URL e.g. "https://statsapi.mlb.com/api/v1/game/530594/content?language=en" 
-4. Find in the media.epgAlternate nodes the "Extended Highlights" section, and then find the item that is the condensed game (if it exists)
-5. Pick the correct URL node - the largest sized video that has a value that ends in .mp4
+4. Find in the media.epgAlternate nodes the "Extended Highlights" section, and then find the item that is the condensed game video (if it exists)
+5. Pick the correct URL node - the video that has a value that ends in .mp4
 
 Assuming that a condensed game is found, the function then returns JSON like:
 ```

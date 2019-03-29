@@ -74,31 +74,16 @@ MlbAPI.findCondensedGame = function (dateParameter, teamParameter, callback) {
                             for (var i = 0; i < highlights.length; i++) {
                                 var highlightNode = highlights[i];
         
-                                // Check if any of the keywords are condensed game
-                                var foundCondensedGame = false;
-        
-                                for (var k = 0; k < highlightNode.keywordsAll.length; k++) {
-                                    var keywordNode =  highlightNode.keywordsAll[k];
-        
-                                    if (keywordNode.type == "mlbtax" && keywordNode.value == "condensed_game") {
-                                        foundCondensedGame = true;
-                                    }
-                                }
-        
-                                // If it is a condensed game, return the largest mp4 media node
-                                if (foundCondensedGame) {
+                                // If it is a condensed game video, return the mp4 media node
+                                if (highlightNode.type == "video") {
                                     const mediaNodes = highlightNode.playbacks;
         
-                                    var largestWidth = 0;
                                     for (var m = 0; m < mediaNodes.length; m++) {
                                         const mediaNode = mediaNodes[m];
         
-                                        const currentMediaUrl = mediaNode.url;
-                                        const currentWidth = mediaNode.width;
-        
-                                        if (currentMediaUrl.endsWith(".mp4") && currentWidth > largestWidth) {
-                                            mediaUrl = currentMediaUrl;
-                                            largestWidth = currentWidth;
+                                        if (mediaNode.url.endsWith(".mp4") && mediaNode.name == "mp4Avc") {
+                                            mediaUrl = mediaNode.url;
+                                            break;
                                         }
                                     }
         
