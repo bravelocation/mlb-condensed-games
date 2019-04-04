@@ -74,11 +74,11 @@ MlbMonitor.checkForChanges = function(callback) {
                 // If we have a full set of data, save it and send the Slack message
                 if (gameDetails.opponent && gameDetails.date && gameDetails.url) {
                     // Send Slack message
-                    const message = "New condensed game vs " + gameDetails.opponent + "\n" + gameDetails.url;
+                    const message = "New condensed game vs " + gameDetails.opponent.toUpperCase() + "\n" + gameDetails.url;
                     sendSlackMessage(slackWebHook, message);
 
                     // Send IFTTT notification message
-                    sendIFTTTMessage("New condensed game vs " + gameDetails.opponent + " available", gameDetails.url);
+                    sendIFTTTMessage("New condensed game vs " + gameDetails.opponent.toUpperCase() + " available", gameDetails.url);
 
                     s3Client.putObject({
                         Bucket: s3DataBucket,
