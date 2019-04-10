@@ -60,6 +60,7 @@ MlbAPI.findCondensedGame = function (dateParameter, teamParameter, callback) {
                 }
 
                 var mediaUrl = null;
+                var mediaType = null;
 
                 if (gameData.media && gameData.media.epgAlternate) {
                     const epgNodes = gameData.media.epgAlternate;
@@ -68,7 +69,7 @@ MlbAPI.findCondensedGame = function (dateParameter, teamParameter, callback) {
 
                         const epgNode = epgNodes[e];
 
-                        if (epgNode.title == "Extended Highlights") {
+                        if (epgNode.title == "Extended Highlights" || epgNode.title == "Daily Recap") {
                             const highlights = epgNode.items;
 
                             for (var i = 0; i < highlights.length; i++) {
@@ -83,6 +84,7 @@ MlbAPI.findCondensedGame = function (dateParameter, teamParameter, callback) {
         
                                         if (mediaNode.url.endsWith(".mp4") && mediaNode.name == "mp4Avc") {
                                             mediaUrl = mediaNode.url;
+                                            mediaType = epgNode.title;
                                             break;
                                         }
                                     }
@@ -93,7 +95,9 @@ MlbAPI.findCondensedGame = function (dateParameter, teamParameter, callback) {
                             }
 
                             // Found condensed media, so we are done
-                            break;
+                            if (mediaUrl) {
+                                break;
+                            }
                         }
                     }
                 }
@@ -101,7 +105,8 @@ MlbAPI.findCondensedGame = function (dateParameter, teamParameter, callback) {
                 const response = {
                     opponent: opponent,
                     date: dateParameter,
-                    url: mediaUrl	
+                    url: mediaUrl,
+                    mediaType: mediaType	
                 };
 
                 callback(response, null);
@@ -110,7 +115,8 @@ MlbAPI.findCondensedGame = function (dateParameter, teamParameter, callback) {
             const response = {
                 opponent: opponent,
                 date: dateParameter,
-                url: null	
+                url: null,
+                mediaType: null	
             };
     
             callback(response, null);            

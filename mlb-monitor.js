@@ -74,11 +74,11 @@ MlbMonitor.checkForChanges = function(callback) {
                 // If we have a full set of data, save it and send the Slack message
                 if (gameDetails.opponent && gameDetails.date && gameDetails.url) {
                     // Send Slack message
-                    const message = "New condensed game vs " + gameDetails.opponent.toUpperCase() + "\n" + gameDetails.url;
+                    const message = "New " + gameDetails.mediaType + " vs " + gameDetails.opponent.toUpperCase() + "\n" + gameDetails.url;
                     sendSlackMessage(slackWebHook, message);
 
                     // Send IFTTT notification message
-                    sendIFTTTMessage("New condensed game vs " + gameDetails.opponent.toUpperCase() + " available", gameDetails.url);
+                    sendIFTTTMessage("New " + gameDetails.mediaType + " vs " + gameDetails.opponent.toUpperCase() + " available", gameDetails.url, gameDetails.mediaType);
 
                     s3Client.putObject({
                         Bucket: s3DataBucket,
@@ -111,10 +111,10 @@ function sendSlackMessage(slackWebHook, message) {
     });
 }
 
-function sendIFTTTMessage(messageText, videoLink) {
+function sendIFTTTMessage(messageText, videoLink, title) {
     var formData = { 
         "value1" : messageText, 
-        "value2" : "MLB Condensed Game", 
+        "value2" : title, 
         "value3" : videoLink
     };
 
