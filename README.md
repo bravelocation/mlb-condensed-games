@@ -31,15 +31,17 @@ This will then:
 Assuming that a condensed game is found, the function then returns JSON like:
 ```
 {
-	opponent: "pit",
-	date: "2019-04-26",
-	url: "http://mediadownloads.mlb.com/mlbam/mp4/2018/06/27/2202032583/1530076464641/asset_1200K.mp4"
+	"opponent": "pit",
+	"date": "2019-04-26",
+	"url": "http://mediadownloads.mlb.com/mlbam/mp4/2018/06/27/2202032583/1530076464641/asset_1200K.mp4",
+	"mediaType": "Extended Highlights" 
 }
 ```
 
 Note:
 - The ```opponent``` attribute can null if no game has been found
 - The ```url``` attribute can null if no condensed game stream has been found for the game
+- The ```mediaType``` attribute can null or "Extended Highlights" (I experimented with also getting the "Recap" for a while)
 
 
 ### Configuration - Environment variables
@@ -55,7 +57,7 @@ This function saves the last found game data in an S3 bucket, and then is design
 - Otherwise, call the condensed game function for either yesterday or today (if the last game was yesterday), and if the result has a url attribute
     - Save the latest game data JSON to S3
     - Call Slack sending the url attribute in a mesage
-
+    - Call an IFTTT web hook that sends an iOS notification, clicking on which opens the viedo URL
 
 You can setup a schedule in Cloudwatch to run every N minutes.
 
@@ -66,4 +68,6 @@ You can setup a schedule in Cloudwatch to run every N minutes.
 - ```S3SECRETACCESSKEY```: Access Secret for the S3 bucket to save game data
 - ```SLACK_WEBHOOK_URL```: URL of the webhook to send the Slack message to
 - ```TEAM```: Team abbreviation to monitor e.g. nym
+- ```IFTTT_EVENT_NAME```: Name of the IFTTT event to send the notification call to
+- ```IFTTT_MAKER_KEY```: Name of the IFTTT maker key to enable IFTTT calls
 
