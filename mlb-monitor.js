@@ -126,7 +126,7 @@ function sendIFTTTMessage(messageText, videoLink, title) {
             url: "https://maker.ifttt.com/trigger/" + iftttEvent + "/with/key/" + iftttMakerKey, 
             formData: formData}, function optionalCallback(err, httpResponse, body) {
     if (err) {
-        console.log('Uploaded to IFTTT failed');
+        console.log('Uploaded to IFTTT failed: ', err);
     } else {
         console.log('Upload successful!');
     }
