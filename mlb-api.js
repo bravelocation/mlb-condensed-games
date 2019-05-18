@@ -67,17 +67,9 @@ MlbAPI.findCondensedGame = function (dateParameter, teamParameter, callback) {
 
                     for (var e = 0; e < epgNodes.length; e++) {
 
-                        let epgNode = epgNodes[e];
+                        const epgNode = epgNodes[e];
 
                         if (epgNode.title == "Extended Highlights") {
-
-                            // Get the next node for the video items
-                            if (e >= epgNodes.length - 1) {
-                                break;
-                            }
-
-                            epgNode = epgNodes[e + 1];
-
                             const highlights = epgNode.items;
 
                             for (var i = 0; i < highlights.length; i++) {
