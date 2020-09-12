@@ -113,9 +113,9 @@ function sendSlackMessage(slackWebHook, message) {
 
 function sendIFTTTMessage(messageText, videoLink, title) {
     var formData = { 
-        "value1" : messageText, 
-        "value2" : title, 
-        "value3" : videoLink
+        "Value1" : messageText, 
+        "Value2" : title, 
+        "Value3" : videoLink
     };
 
     const iftttEvent = process.env.IFTTT_EVENT_NAME;
