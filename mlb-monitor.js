@@ -77,9 +77,6 @@ MlbMonitor.checkForChanges = function(callback) {
                     const message = "New " + gameDetails.mediaType + " vs " + gameDetails.opponent.toUpperCase() + "\n" + gameDetails.url;
                     sendSlackMessage(slackWebHook, message);
 
-                    // Send IFTTT notification message
-                    sendIFTTTMessage("New " + gameDetails.mediaType + " vs " + gameDetails.opponent.toUpperCase() + " available", gameDetails.url, gameDetails.mediaType);
-
                     s3Client.putObject({
                         Bucket: s3DataBucket,
                         Key: s3DataFile,
@@ -107,35 +104,6 @@ function sendSlackMessage(slackWebHook, message) {
             console.log('Error:', err);
         } else {
             console.log('Message sent: ', res);
-        }
-    });
-}
-
-function sendIFTTTMessage(messageText, videoLink, title) {
-    var formData = { 
-        "value1" : messageText,
-        "value2" : title,
-        "value3" : videoLink
-    };
-    
-    var headers = {
-        "Content-Type": "application/json"
-    };
-
-    const iftttEvent = process.env.IFTTT_EVENT_NAME;
-    const iftttMakerKey = process.env.IFTTT_MAKER_KEY;
-
-    // Call IFTTT with data
-    request.post({
-            headers: headers,
-            method: 'POST',
-            url: "https://maker.ifttt.com/trigger/" + iftttEvent + "/with/key/" + iftttMakerKey, 
-            formData: formData
-    }, function optionalCallback(err, httpResponse, body) {
-        if (err) {
-            console.log('Uploaded to IFTTT failed: ', err);
-        } else {
-            console.log('Upload to IFTTT successful!');
         }
     });
 }
