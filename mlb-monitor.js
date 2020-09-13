@@ -113,9 +113,13 @@ function sendSlackMessage(slackWebHook, message) {
 
 function sendIFTTTMessage(messageText, videoLink, title) {
     var formData = { 
-        "Value1" : messageText, 
-        "Value2" : title, 
-        "Value3" : videoLink
+        "value1" : messageText,
+        "value2" : title,
+        "value3" : videoLink
+    };
+    
+    var headers = {
+        "Content-Type": "application/json"
     };
 
     const iftttEvent = process.env.IFTTT_EVENT_NAME;
@@ -123,13 +127,16 @@ function sendIFTTTMessage(messageText, videoLink, title) {
 
     // Call IFTTT with data
     request.post({
+            headers: headers,
+            method: 'POST',
             url: "https://maker.ifttt.com/trigger/" + iftttEvent + "/with/key/" + iftttMakerKey, 
-            formData: formData}, function optionalCallback(err, httpResponse, body) {
-    if (err) {
-        console.log('Uploaded to IFTTT failed: ', err);
-    } else {
-        console.log('Upload successful!');
-    }
+            formData: formData
+    }, function optionalCallback(err, httpResponse, body) {
+        if (err) {
+            console.log('Uploaded to IFTTT failed: ', err);
+        } else {
+            console.log('Upload to IFTTT successful!');
+        }
     });
 }
 
