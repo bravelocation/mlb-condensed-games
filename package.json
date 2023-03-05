@@ -1,6 +1,6 @@
 {
   "name": "mlb-condensed-games",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Scripts to check if MLB condensed games are available",
   "main": "checker.js",
   "repository": {
@@ -20,9 +20,8 @@
   "homepage": "https://github.com/bravelocation/mlb-condensed-games#readme",
   "dependencies": {
     "@slack/client": "^5.0.2",
-    "aws-sdk": "^2.1062.0",
-    "dotenv": "^10.0.0",
-    "request": "^2.88.2",
-    "xml2js": "^0.4.23"
+    "aws-sdk": "^2.1328.0",
+    "dotenv": "^16.0.3",
+    "request": "^2.88.2"
   }
 }
