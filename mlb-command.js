@@ -2,14 +2,14 @@ const mlbApi = require("./mlb-api");
 
 // Read date and team from command line
 if (process.argv.length < 4) {
-    console.log("Usage: node mlb-command.js [yyyy-MM-dd] [nym]");
+    console.log("Usage: node mlb-command.js [yyyy-MM-dd] [New York Mets]");
     process.exit();
 }
 
 const dateParameter = process.argv[2];
-const teamParameter = process.argv[3].toLowerCase();
+const teamName = process.argv[3].toLowerCase();
 
-mlbApi.findCondensedGame(dateParameter, teamParameter, function(gameDetails, error){
+mlbApi.findCondensedGame(dateParameter, teamName, function(gameDetails, error){
     if (error) {
         console.log("ERROR:"  + error);
     } else {

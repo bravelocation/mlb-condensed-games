@@ -4,7 +4,7 @@ const xml2js = require('xml2js');
 var MlbAPI = function () {};
 
 // Function that sends error message via Slack
-MlbAPI.findCondensedGame = function (dateParameter, teamParameter, callback) {
+MlbAPI.findCondensedGame = function (dateParameter, teamName, callback) {
 
     findGamesOnDate(dateParameter, function(gameData, error) {
         if (error) {
@@ -16,7 +16,7 @@ MlbAPI.findCondensedGame = function (dateParameter, teamParameter, callback) {
         let opponent = null;
         let gameDirectoryUrl = null;
 
-        if (gameData.games == null || gameData.games.game == null) {
+        if (gameData.dates == null) {
             const response = {
                 opponent: opponent,
                 date: dateParameter,
@@ -28,26 +28,34 @@ MlbAPI.findCondensedGame = function (dateParameter, teamParameter, callback) {
         }
 
         // Find any matching games
-        const games = gameData.games.game;
+        const dates = gameData.dates;
 
-        for (var i = 0; i < games.length; i++) {
-            const game = games[i];
+        for (var d = 0; d < dates.length; d++) {
+            const date = dates[d];
 
-            const homeCode = game["$"].home_file_code;
-            const awayCode = game["$"].away_file_code;
-            const game_pk = game["$"].game_pk;
+            if (date.date === dateParameter) {
+                const games = date.games;
 
-            if (homeCode == teamParameter || awayCode == teamParameter) {
-                // Found a matching game
-                gameDirectoryUrl = "https://statsapi.mlb.com/api/v1/game/" + game_pk + "/content?language=en";
+                for (var i = 0; i < games.length; i++) {
+                    const game = games[i];
+                    const gamePk = game.gamePk;
 
-                if (homeCode == teamParameter) {
-                    opponent = awayCode;
-                } else {
-                    opponent = homeCode;
+                    var awayTeamName = game.teams.away.team.name;
+                    var homeTeamName = game.teams.home.team.name;
+        
+                    if (homeTeamName.toLowerCase() === teamName.toLowerCase() || awayTeamName.toLowerCase() === teamName.toLowerCase()) {
+                        // Found a matching game
+                        gameDirectoryUrl = "https://statsapi.mlb.com/api/v1/game/" + gamePk + "/content?language=en";
+        
+                        if (homeTeamName === teamName) {
+                            opponent = awayTeamName;
+                        } else {
+                            opponent = homeTeamName;
+                        }
+        
+                        break;
+                    }
                 }
-
-                break;
             }
         }
 
@@ -132,11 +140,8 @@ function findGamesOnDate(dateParameter, callback) {
         callback(null, "Invalid date format");
     }
 
-    const year = dateParts[0];
-    const month = dateParts[1];
-    const day = dateParts[2];
+    const gameDataUrl = 'https://statsapi.mlb.com/api/v1/schedule?sportId=1,51&date=' + dateParameter;
 
-    const gameDataUrl = "http://gd2.mlb.com/components/game/mlb/year_" + year + "/month_" + month + "/day_" + day + "/master_scoreboard.xml";
     console.log("Game Data URL: " + gameDataUrl);
 
     request(
@@ -152,10 +157,8 @@ function findGamesOnDate(dateParameter, callback) {
                 return;
             }
 
-            // Otherwise let's parse the XML and return it as JSON
-            xml2js.parseString(body, function(err, data){
-                callback(data, err);
-            });
+            // Otherwise return the JSON
+            callback(JSON.parse(body), null);
         });  
 };
 

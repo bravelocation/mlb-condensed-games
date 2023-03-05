@@ -14,7 +14,7 @@ This function reads from the POSTed JSON formatted like:
 ```
 {
 	gameDate: "2019-04-26",
-	team: "nym"
+	team: "New York Mets"
 }
 ```
 
@@ -22,16 +22,16 @@ You must also send a HTTP header of ```MLBAPIRequest``` with a value set as an e
 
 This will then:
 
-1. Build URL like http://gd2.mlb.com/components/game/mlb/year_2018/month_06/day_26/master_scoreboard.xml (using the incoming date)
-2. Look for &lt;game&gt; node where home_file_code="nym" or away_file_code="nym” (using the incoming team)
-3. Pick up game_pk attribute to get the URL e.g. "https://statsapi.mlb.com/api/v1/game/530594/content?language=en" 
+1. Build URL likehttps://statsapi.mlb.com/api/v1/schedule?sportId=1,51&date=2023-03-04 (using the incoming date)
+2. Look for &lt;game&gt; node where teams.away.name or teams.home.name="New York Mets” (using the incoming team)
+3. Pick up gamePK attribute to get the URL e.g. "https://statsapi.mlb.com/api/v1/game/530594/content?language=en" 
 4. Find in the media.epgAlternate nodes the "Extended Highlights" section, and then find the item that is the condensed game video (if it exists)
 5. Pick the correct URL node - the video that has a value that ends in .mp4
 
 Assuming that a condensed game is found, the function then returns JSON like:
 ```
 {
-	"opponent": "pit",
+	"opponent": "Pittsburgh Pirates",
 	"date": "2019-04-26",
 	"url": "http://mediadownloads.mlb.com/mlbam/mp4/2018/06/27/2202032583/1530076464641/asset_1200K.mp4",
 	"mediaType": "Extended Highlights" 
