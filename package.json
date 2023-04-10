@@ -20,7 +20,7 @@
   "homepage": "https://github.com/bravelocation/mlb-condensed-games#readme",
   "dependencies": {
     "@slack/client": "^5.0.2",
-    "aws-sdk": "^2.1328.0",
+    "aws-sdk": "^2.1354.0",
     "dotenv": "^16.0.3",
     "request": "^2.88.2"
   }
