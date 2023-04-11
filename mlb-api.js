@@ -47,7 +47,7 @@ MlbAPI.findCondensedGame = function (dateParameter, teamName, callback) {
                         // Found a matching game
                         gameDirectoryUrl = "https://statsapi.mlb.com/api/v1/game/" + gamePk + "/content?language=en";
         
-                        if (homeTeamName === teamName) {
+                        if (homeTeamName.toLowerCase() === teamName.toLowerCase()) {
                             opponent = awayTeamName;
                         } else {
                             opponent = homeTeamName;
