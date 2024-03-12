@@ -22,7 +22,7 @@ You must also send a HTTP header of ```MLBAPIRequest``` with a value set as an e
 
 This will then:
 
-1. Build URL likehttps://statsapi.mlb.com/api/v1/schedule?sportId=1,51&date=2023-03-04 (using the incoming date)
+1. Build URL like https://statsapi.mlb.com/api/v1/schedule?sportId=1,51&date=2023-03-04 (using the incoming date)
 2. Look for &lt;game&gt; node where teams.away.name or teams.home.name="New York Mets” (using the incoming team)
 3. Pick up gamePK attribute to get the URL e.g. "https://statsapi.mlb.com/api/v1/game/530594/content?language=en" 
 4. Find in the media.epgAlternate nodes the "Extended Highlights" section, and then find the item that is the condensed game video (if it exists)
