@@ -19,7 +19,6 @@ exports.handler = function(event, context, callback) {
 
     // Get the parameters from the post request
     const inputParameters = JSON.parse(event.body);
-    const gameDate = inputParameters.params.gameDate;
     const team = inputParameters.params.team;
 
     if (gameDate === undefined || team === undefined) {
@@ -28,7 +27,7 @@ exports.handler = function(event, context, callback) {
         return;
     }
 
-    mlbApi.findCondensedGame(gameDate, team.toLowerCase(), function(gameDetails, error){
+    mlbApi.findCondensedGameFromYouTube(team.toLowerCase(), function(gameDetails, error){
         if (error) {
             console.log("Error: " + error);
             callback("500 Internal Error");
