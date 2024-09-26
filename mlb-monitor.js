@@ -49,12 +49,13 @@ MlbMonitor.checkForChanges = function(callback) {
                 console.log("Error: " + error);
                 callback("Error finding condensed game");
             } else {
-                console.log("Results: " + JSON.stringify(gameDetails));
+                const responseData = gameDetails == null ? {} : gameDetails;
+                console.log("Results: " + JSON.stringify(responseData));
 
                 // If we have a full set of data, save it and send the Slack message unless the ID matches the last one
-                if (gameDetails.title && gameDetails.id && gameDetails.url && gameDetails.id !== lastID) {
+                if (responseData.title && responseData.id && responseData.url && responseData.id !== lastID) {
                     // Send Slack message
-                    const message = gameDetails.title + "\n" + gameDetails.url;
+                    const message = responseData.title + "\n" + responseData.url;
                     sendSlackMessage(slackWebHook, message);
 
                     s3Client.putObject({
@@ -62,7 +63,7 @@ MlbMonitor.checkForChanges = function(callback) {
                         Key: s3DataFile,
                         ACL: 'private',
                         ContentType: 'application/json',
-                        Body: JSON.stringify(gameDetails)
+                        Body: JSON.stringify(responseData)
                     }, function(err, data) { 
                         if (err) {
                             callback(null, "Updated but not saved");

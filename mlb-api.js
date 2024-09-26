@@ -228,7 +228,7 @@ MlbAPI.findCondensedGameFromYouTube = function (teamName, callback) {
                     }
                 }
 
-                callback(null, "No video found");
+                callback(null, null);
             });
         });
 };

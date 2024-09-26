@@ -12,7 +12,9 @@ mlbApi.findCondensedGameFromYouTube(teamName, function(gameDetails, error){
     if (error) {
         console.log("ERROR:"  + error);
     } else {
-        console.log("Game details: " + JSON.stringify(gameDetails));
+        const responseData = gameDetails == null ? {} : gameDetails;
+
+        console.log("Game details: " + JSON.stringify(responseData));
     }
 });
 

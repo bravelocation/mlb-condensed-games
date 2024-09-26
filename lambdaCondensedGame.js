@@ -21,7 +21,7 @@ exports.handler = function(event, context, callback) {
     const inputParameters = JSON.parse(event.body);
     const team = inputParameters.params.team;
 
-    if (gameDate === undefined || team === undefined) {
+    if (team === undefined) {
         console.log("Input error: " + JSON.stringify(inputParameters));
         callback("400 Invalid Input");
         return;
@@ -32,11 +32,13 @@ exports.handler = function(event, context, callback) {
             console.log("Error: " + error);
             callback("500 Internal Error");
         } else {
-            console.log("Results: " + JSON.stringify(gameDetails));
+            const responseData = gameDetails == null ? {} : gameDetails;
+
+            console.log("Results: " + JSON.stringify(responseData));
 
             var response = {
                 "statusCode": 200,
-                "body": JSON.stringify(gameDetails),
+                "body": JSON.stringify(responseData),
                 "isBase64Encoded": false
             };
 
