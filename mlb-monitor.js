@@ -28,53 +28,34 @@ MlbMonitor.checkForChanges = function(callback) {
         Key: s3DataFile
     };
 
-    var lastDateFetched = null;
+    var lastID = "";
 
     s3Client.getObject(params, function(err, data) {
         if (err) {
             console.log("Error fetching data file from S3: " + err);
             // No data file so start at random date for now
-            lastDateFetched = "2018-09-27";
+            lastID = "";
         } else {
             var buffer = Buffer.from(data.Body);
             var json = buffer.toString("utf8");
             var dataFile = JSON.parse(json);
-            lastDateFetched = dataFile.date;           
+            lastID = dataFile.id;           
         }
 
-        console.log("Last fetched date: " + lastDateFetched);
+        console.log("Last ID: " + lastID);
 
-        // If date is == today, we are good
-        var today = new Date();
-
-        if (formatDate(today) == lastDateFetched) {
-            return;
-        }
-        
-        var yesterday =  new Date();
-        yesterday.setDate(yesterday.getDate() - 1);
-
-        var gameDate = "";
-
-        if (formatDate(yesterday) == lastDateFetched) {
-            // Try today
-            gameDate = formatDate(today);
-        } else {
-            // Try yesterday
-            gameDate = formatDate(yesterday);
-        }
-
-        mlbApi.findCondensedGame(gameDate, team.toLowerCase(), function(gameDetails, error){
+        mlbApi.findCondensedGameFromYouTube(team.toLowerCase(), function(gameDetails, error){
             if (error) {
                 console.log("Error: " + error);
                 callback("Error finding condensed game");
             } else {
-                console.log("Results: " + JSON.stringify(gameDetails));
+                const responseData = gameDetails == null ? {} : gameDetails;
+                console.log("Results: " + JSON.stringify(responseData));
 
-                // If we have a full set of data, save it and send the Slack message
-                if (gameDetails.opponent && gameDetails.date && gameDetails.url) {
+                // If we have a full set of data, save it and send the Slack message unless the ID matches the last one
+                if (responseData.title && responseData.id && responseData.url && responseData.id !== lastID) {
                     // Send Slack message
-                    const message = "New " + gameDetails.mediaType + " vs " + gameDetails.opponent.toUpperCase() + "\n" + gameDetails.url;
+                    const message = responseData.title + "\n" + responseData.url;
                     sendSlackMessage(slackWebHook, message);
 
                     s3Client.putObject({
@@ -82,7 +63,7 @@ MlbMonitor.checkForChanges = function(callback) {
                         Key: s3DataFile,
                         ACL: 'private',
                         ContentType: 'application/json',
-                        Body: JSON.stringify(gameDetails)
+                        Body: JSON.stringify(responseData)
                     }, function(err, data) { 
                         if (err) {
                             callback(null, "Updated but not saved");
@@ -106,18 +87,6 @@ function sendSlackMessage(slackWebHook, message) {
             console.log('Message sent: ', res);
         }
     });
-}
-
-function formatDate(date) {
-    var d = new Date(date),
-    month = '' + (d.getMonth() + 1),
-    day = '' + d.getDate(),
-    year = d.getFullYear();
-
-    if (month.length < 2) month = '0' + month;
-    if (day.length < 2) day = '0' + day;
-
-    return [year, month, day].join('-');
 }
 
 module.exports = MlbMonitor;

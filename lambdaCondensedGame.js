@@ -19,25 +19,26 @@ exports.handler = function(event, context, callback) {
 
     // Get the parameters from the post request
     const inputParameters = JSON.parse(event.body);
-    const gameDate = inputParameters.params.gameDate;
     const team = inputParameters.params.team;
 
-    if (gameDate === undefined || team === undefined) {
+    if (team === undefined) {
         console.log("Input error: " + JSON.stringify(inputParameters));
         callback("400 Invalid Input");
         return;
     }
 
-    mlbApi.findCondensedGame(gameDate, team.toLowerCase(), function(gameDetails, error){
+    mlbApi.findCondensedGameFromYouTube(team.toLowerCase(), function(gameDetails, error){
         if (error) {
             console.log("Error: " + error);
             callback("500 Internal Error");
         } else {
-            console.log("Results: " + JSON.stringify(gameDetails));
+            const responseData = gameDetails == null ? {} : gameDetails;
+
+            console.log("Results: " + JSON.stringify(responseData));
 
             var response = {
                 "statusCode": 200,
-                "body": JSON.stringify(gameDetails),
+                "body": JSON.stringify(responseData),
                 "isBase64Encoded": false
             };
 
