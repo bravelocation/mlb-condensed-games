@@ -216,7 +216,7 @@ MlbAPI.findCondensedGameFromYouTube = function (teamName, callback) {
                     const videoUrl = entry.link[0].$.href;
                     const id = entry.id[0];
 
-                    if (title.toLowerCase().includes(teamName.toLowerCase()) && title.toLowerCase().includes("game highlights")) {
+                    if (title.toLowerCase().includes(teamName.toLowerCase()) && title.toLowerCase().includes("game") && title.toLowerCase().includes("highlights")) {
                         const response = {
                             title: title,
                             url: videoUrl,
