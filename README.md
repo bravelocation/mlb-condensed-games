@@ -35,7 +35,6 @@ Assuming that a game is found, the function then returns JSON like:
 ### Configuration - Environment variables
 - ```MLBAPIRequest```: The value to be sent in the header of any request
 
-
 ## Monitoring function
 
 This function saves the last found game data in an S3 bucket, and then is designed to run on a schedule to do the following:
